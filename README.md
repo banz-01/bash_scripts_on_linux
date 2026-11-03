@@ -1,7 +1,7 @@
 # Bash Automation & Linux SysAdmin Toolkit 
 
 This repo show some scripts written in bash for file sorting, ssh provisioner and a directory explorer. I t will be growing as the project i will be working on in bash grow as well.
-i have worked on these scripts with minimal aid from Ai as i feel scripting is an important skill for engineers in networking especially in this error of growing cyber insecurity in the digital space.
+i have worked on these scripts with minimal aid from Ai as i feel scripting is an important skill for engineers in networking especially in this era of growing cyber insecurity in the digital space.
 
 ---
 
