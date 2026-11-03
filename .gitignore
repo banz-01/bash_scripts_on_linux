@@ -1,0 +1,13 @@
+# Vim / Nano swap and backup files
+*.swp
+*.swo
+*.swn
+*~
+.swp
+
+# Runtime logs & test outputs
+ping.txt
+*.log
+
+# Test sandbox directories
+sandbox/

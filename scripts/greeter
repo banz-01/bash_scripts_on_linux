@@ -1,0 +1,10 @@
+#!/bin/bash
+greet(){
+	if [[ -n	
+	local name=$@
+	echo "hello $name"
+}
+
+for name in "$@"; do 
+	greet $name 
+done 

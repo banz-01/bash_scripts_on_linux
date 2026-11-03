@@ -1,0 +1,106 @@
+===============================================================================
+KWESE DECODER TECHNICIAN GUIDE: FTA BYPASS & SERIAL RECOVERY
+===============================================================================
+
+This guide outlines both the non-destructive software bypass method and the 
+low-level hardware flashing procedure for repurposing Kwesé TV DVB-S2 decoders 
+into standard Free-To-Air (FTA) satellite receivers.
+
+-------------------------------------------------------------------------------
+1. WHY THE ETHERNET PORT CANNOT BE USED WITH PuTTY
+-------------------------------------------------------------------------------
+* No SSH/Telnet Server: The factory firmware running on Kwesé decoders does not 
+  host an active SSH or Telnet daemon listening on the RJ45 Ethernet port.
+* No Remote Management: Network protocols are strictly bound to secure content 
+  delivery platforms and internal system metrics.
+* Conclusion: You CANNOT use an Ethernet cable paired with PuTTY to access the 
+  command console or flash firmware. Low-level access requires a direct physical 
+  serial connection to the motherboard's microcontroller lines.
+
+-------------------------------------------------------------------------------
+2. METHOD A: THE SOFTWARE-BASED INSTALLER BYPASS (RECOMMENDED FIRST STEP)
+-------------------------------------------------------------------------------
+This method forces the decoder's native factory OS to open its manual/blind scan 
+transponder tools, circumventing the locked Kwesé activation wall.
+
+Step 1: Setup Infrastructure
+   * Connect a working satellite dish coax cable to the 'LNB IN' port.
+   * Point the dish toward an active FTA satellite operating in your region 
+     (e.g., Eutelsat 7B/7C, Astra 2F, Intelsat 20).
+   * Connect HDMI or AV to your test monitor and power on the box.
+
+Step 2: Access System Settings
+   * Press 'Menu' on the remote control.
+   * Navigate to 'System Settings'.
+   * Scroll down to highlight 'Time Settings' (DO NOT click OK; just hover over it).
+
+Step 3: Trigger the Hidden Engineering Menu
+   * Press the GREEN button on the remote control exactly once.
+   * Immediately type '4362' on the numpad.
+   * Press the MUTE button immediately after.
+
+Step 4: Execute the Scan
+   * If successful, the native technician's manual configuration layout will appear.
+   * Select 'Manual Scan' or 'Blind Scan'.
+   * Match your LNB Frequency parameters (typically 9750/10600 for Universal LNBs).
+   * Run the scan to extract and save all unencrypted channels directly to storage.
+
+*Tech Note (Unactivated Box Loop): If the unit is fresh out of the box and stuck 
+at a mandatory first-time installation configuration, select 'Ignore' and try the 
+technician override bypass PIN: '1111'.
+
+-------------------------------------------------------------------------------
+3. METHOD B: HARDWARE SERIAL RECOVERY VIA PuTTY
+-------------------------------------------------------------------------------
+Use this physical configuration if the firmware revision on the board actively 
+strips or blocks remote control shortcuts.
+
+Step 1: Probe the UART Bus
+   * Strip down the external plastic casing to reveal the mainboard PCB.
+   * Locate an unpopulated row of 3 or 4 solder pin holes near the main SoC processor.
+   * They are typically marked: VCC (3.3V/5V), RX, TX, GND.
+   * CRITICAL SECURITY WARNING: NEVER hook up the VCC line to your adapter. Connecting 
+     external power here can cross-circuit and fry both the decoder chip and your PC.
+
+Step 2: Align the Bus Connections
+   * Procure a USB-to-TTL Serial Debugging Adapter (CP2102, PL2303, or FTDI chipsets).
+   * Cross-wire the communication channels:
+     - Adapter GND ---> Decoder Board GND
+     - Adapter TX  ---> Decoder Board RX
+     - Adapter RX  ---> Decoder Board TX
+
+Step 3: Map the Windows Comms Interface
+   * Connect the USB side to your computer.
+   * Launch Windows Device Manager (`devmgmt.msc`) and look under 'Ports (COM & LPT)' 
+     to confirm your interface identifier (e.g., COM3).
+
+Step 4: Launch and Tune PuTTY
+   * Initialize a new PuTTY session and define the following low-level params:
+     - Connection Type: Serial
+     - Serial Line: [Input your matched COM Port]
+     - Speed (Baud Rate): 115200 (Default standard for STB bootloaders)
+     - Data bits: 8
+     - Stop bits: 1
+     - Parity: None
+     - Flow Control: None
+
+Step 5: Catch the Boot Execution Trace
+   * Hit 'Open' to fire up the raw terminal interface window.
+   * Supply main AC/DC power to the Kwesé decoder unit.
+   * Scrolling hex strings and kernel initialization flags should fill the screen.
+   * Intercept Bootloader: Tap execution escape triggers (such as Spacebar, Esc, 
+     or Ctrl+C continuously) within the first 1.5 seconds of boot-up to intercept 
+     the sequence and enter the interactive U-Boot/system shell terminal prompt.
+
+-------------------------------------------------------------------------------
+4. CHIPSET & FIRMWARE CONSIDERATIONS
+-------------------------------------------------------------------------------
+* SoC Identification: Desolder or view the main processing core. Kwesé boxes 
+  traditionally deploy Ali architectures (e.g., M3510/M3511 series) or NationalChip 
+  (GX) frameworks.
+* Always Backup First: Do not deploy an untested image immediately. Run chip dump 
+  utilities (like Ali Flash Loader or GXDownloader) via your UART adapter first 
+  to execute a complete full-flash dump backup (.bin file) of your native memory.
+* Source Material: Generic replacement firmware images must explicitly match the 
+  processor model designation and the exact physical motherboard structural revision ID.
+===============================================================================

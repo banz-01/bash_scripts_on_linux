@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for thing in {a..g}; do
+	echo "the thing s $thing"
+done
+
+max=3
+for ((i=0; i <= max; i++)); do 
+	echo "the value is $i"
+done 
+
+	

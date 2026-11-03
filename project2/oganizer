@@ -1,0 +1,79 @@
+#! usr/bin/env bash
+#
+
+set -euo pipefail
+
+task1(){
+
+if [[ -d "$target_dir" ]]; then
+ 	echo " folder found"
+	echo "Organizing"
+
+
+else
+	echo "file not found"
+	echo "please enter correct folder name with no /bat the end"
+	echo " Usage: $0 <full address name>"
+fi
+
+task2
+
+	}
+
+task2(){
+	#  here we now check the target dir and  sort em ou	
+       #files=$(find "$target_dir" -type f) will not work because find will give a full string not arrays
+       # 1. Correctly read the find output into an actual Bash array
+        mapfile -t files < <(find "$target_dir" -maxdepth 1 -type f)
+	file_num=${#files[@]}  #something wrong here!!!!!!!
+	echo "==========================================="
+	echo "found $file_num files"
+	printf "=> %s\n" "${files[@]}"
+	echo "==========================================="
+	declare -a folders
+        folders=(Pdf_files Csv_files Audios Pictures Text_files)
+
+        
+	#creating back up folders
+	for dir in "${folders[@]}" ;do
+		echo " ------ $dir"
+		if [[ -d "$target_dir/$dir" ]]; then
+			echo ======================================================================
+			echo " backup found!"
+			echo "Sorting ..."
+			echo 
+			echo -----
+				# 2. Check if a regular file is blocking the directory creation
+        	 elif [[ -e "$target_dir/$dir" ]]; then
+                	echo "ERROR: '$target_dir/$dir' exists but it is a FILE, not a directory!"
+                	echo "Skipping or handle manually..."
+		else
+   			mkdir "$target_dir/$dir"
+		fi
+	done
+
+	# sorting files into folders
+	for item in "${files[@]}" ;do
+		ext=${item##*.}
+		echo " $ext found "
+		case $ext in
+			pdf)
+				 mv "$item" "$target_dir/Pdf_files";;
+			csv)
+				 mv "$item" "$target_dir/Csv_files";;
+		 	 mp3)
+				mv "$item" "$target_dir/Audios" ;;
+			jpg|png)
+				mv "$item" "$target_dir/Pictures" ;; 
+			txt) 
+				mv "$item" "$target_dir/Text_files";;
+			*)
+				echo " cannot process $ext files";;
+		esac
+	done
+}
+
+target_dir="${1:? Error: Invalid option USAGE: $0 <target dir full address>}"
+task1
+
+

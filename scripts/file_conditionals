@@ -1,0 +1,7 @@
+#!/bin/bash
+
+while [[ -f file.txt ]]; do
+	echo "file exits ($type file.txt)"
+	sleep 1
+done
+

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+a=2
+b=1
+
+
+if [[ $a == $b ]]; then 
+	echo 'a and b are the same'
+        echo "$a =$b" 
+else 
+	echo 'a nd b are not equal'
+fi
+
+if [[ $a != $b ]] ; then
+	echo 'a and b are not the same brotherman '
+fi 
+
+while [[ $a < $b ]]; do
+	echo 'a is still less than b brotherman'
+	sleep 1
+done

@@ -1,0 +1,46 @@
+#!usr/bin/env bash
+
+### this is a script that allows this machine to receive ssh connection ###
+
+### 1st we must install the ssh server if its not present ###
+server_check(){
+	echo "Checking for ssh"
+	echo "$(ssh -V)"
+	present=$?
+
+	if ((present == 1 ));then
+		echo =========================================================================
+		set -euo pipefail	
+		sudo apt install openssh -y
+		echo openssh installed
+		echo ========================================================================
+		
+		start_server
+	else 
+		echo " ssh already installed"
+		start_server
+	fi
+}
+
+
+start_server(){
+	echo "==== starting SSH for you ===="
+	(sudo systemctl start ssh)
+	if (( 0 == $? ));then
+		echo " SSH erver started successfully"
+		echo " $(systemctl status ssh)"
+		echo ============ DETAILS =============
+		echo " USER: $(whoami)"
+		echo " IPv4: $(ip addr show wlo1 | grep 'inet ' | awk '{print $2}' | cut -d'/' -f1)" ## note space in inet'inet ' helps leave out inet6
+		echo ============== Done ==============
+
+	else
+		echo "ERROR: failed to start server"
+		return 1
+	fi
+
+}
+server_check
+
+	
+

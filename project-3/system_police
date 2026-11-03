@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+test_passed=0
+test_failed=0
+
+print_res(){
+
+}
+
+
+network_ping(){
+	declare -a dns_checks
+	dns_checks=(google.com cloudfare.com econet.co.zw)
+	success=0
+	failure=0
+	for dns_name in "${dns_checks[@]}";do
+		if((!success && !failure));then
+			ping -W 5 -c 1 "$(dns_name)" > ./ping.txt
+			retn=$?
+		else
+			ping -W 5 -c 1 "$(dns_name)" >>./ping.txt
+		fi
+
+			if((retn == 0));then
+				success=((success+1))
+			else
+				failure=((failure+1))
+			fi
+	done
+	if ((success > failure));then
+		return 0
+	else
+		return 1
+	fi
+}
+
+
+
+
+
+
+internet=$(network_ping)
+
+
+
+
